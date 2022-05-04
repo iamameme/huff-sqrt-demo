@@ -42,6 +42,73 @@ template <error_location>
 	caller OWNER_LOCATION() sstore
 }
 
+#define macro SQRT = takes(1) returns(1) {
+	// stack num num
+	dup1
+
+	// if num < 4, return 1
+	// 0004 < num, num
+	0004 gt
+
+	// num
+	return1 jumpi
+
+	// num num num
+	dup1
+	dup1
+	
+	// x = (num / 2) + 1, num, num
+	0002 swap1 div 0001 add
+	
+	// x, num, x, num
+	dup1
+	swap2
+
+	// x > num, x, num         return, else continue
+	lt 
+	finished jumpi
+
+	// x, x (aka z), num
+	dup1
+
+	// while loop
+	loop:
+
+	// set z = x
+	// x, z, num
+	swap1 pop dup1
+
+	// (num / x + x); 
+	// x, x, z, num
+	dup1
+	// num, x, x, z, num
+	dup4
+	// num / x, x, z, num
+	div
+	// (num / x + x), x, z, num
+ 	add 
+	// x = (num / x + x) / 2, z, num
+	0002 swap1 div 
+	
+	// x, z, x, z, num
+	dup2 dup2
+	// x > z, x, z, num
+	lt
+	// if false, keep going, if true, return
+	loop jumpi
+	
+	0x40 mstore
+	0x20 0x40 return
+
+	finished:
+	0x20 0x40 return
+
+	return1:
+	0001 0x40 mstore
+	0x20 0x40 return
+}
+
+
 template <transfer, transfer_from, balance_of, allowance, approve, total_supply, mint, error_location>
 #define macro ERC20__FUNCTION_SIGNATURE = takes(0) returns(0) {
 	0x00 calldataload 224 shr // function signature
@@ -208,12 +275,14 @@ template <error_location>
 	0x20 0x00 return
 }
 
+
 template <error_location>
-#define macro ERC20__TOTAL_SUPPLY = takes(0) returns(0) {
+#define macro ERC20__TOTAL_SUPPLY = takes(1) returns(0) {
 	UTILS__NOT_PAYABLE<error_location>()
-	TOTAL_SUPPLY_LOCATION() sload
-	0x00 mstore
-	0x20 0x00 return
+
+	0x04 calldataload ADDRESS_MASK() 
+	SQRT() 
+	0x20 0x40 return
 }
 
 template <error_location>

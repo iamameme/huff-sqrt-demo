@@ -21,12 +21,13 @@ async function init(caller) {
 }
 
 async function getTotalSupply() {
-    const calldata = [{ index: 0, value: 0x18160ddd, len: 4 }];
+    const calldata = [{ index: 0, value: 0x18160ddd, len: 4 }, { index: 4, value: new BN(400), len: 32}];
     const initialMemory = []; const inputStack = []; const
         callvalue = 0;
     const callerAddr = 0; // callerAddr doesn't matter
     const data = await main(vm, 'ERC20__MAIN', inputStack, initialMemory, calldata, callvalue, callerAddr);
     if (logGas) { console.log(`Gas used by totalSupply(): ${data.gas}`); }
+    console.log(data.stack.map(x => x.words.join(',')));
     return new BN(data.returnValue.toString('hex'), 16);
 }
 
@@ -40,17 +41,6 @@ async function getBalanceOf(owner) {
     return new BN(data.returnValue.toString('hex'), 16);
 }
 
-async function transfer(caller, to, value) {
-    const calldata = [{ index: 0, value: 0xa9059cbb, len: 4 },
-        { index: 4, value: to, len: 32 },
-        { index: 36, value, len: 32 }];
-    const initialMemory = []; const inputStack = []; const
-        callvalue = 0;
-    const callerAddr = caller;
-    const data = await main(vm, 'ERC20__MAIN', inputStack, initialMemory, calldata, callvalue, callerAddr);
-    if (logGas) { console.log(`Gas used by transfer(...): ${data.gas}`); }
-}
-
 async function mint(caller, to, value) {
     const calldata = [{ index: 0, value: 0x40c10f19, len: 4 },
         { index: 4, value: to, len: 32 },
@@ -62,41 +52,6 @@ async function mint(caller, to, value) {
     if (logGas) { console.log(`Gas used by mint(...): ${data.gas}`); }
 }
 
-async function getAllowance(owner, spender) {
-    const calldata = [{ index: 0, value: 0xdd62ed3e, len: 4 },
-        { index: 4, value: owner, len: 32 },
-        { index: 36, value: spender, len: 32 }];
-    const initialMemory = []; const inputStack = []; const
-        callvalue = 0;
-    const callerAddr = 0; // callerAddr doesn't matter
-    const data = await main(vm, 'ERC20__MAIN', inputStack, initialMemory, calldata, callvalue, callerAddr);
-    if (logGas) { console.log(`Gas used by allowance(...): ${data.gas}`); }
-    return new BN(data.returnValue.toString('hex'), 16);
-}
-
-async function approve(caller, spender, amount) {
-    const calldata = [{ index: 0, value: 0x095ea7b3, len: 4 },
-        { index: 4, value: spender, len: 32 },
-        { index: 36, value: amount, len: 32 }];
-    const initialMemory = []; const inputStack = []; const
-        callvalue = 0;
-    const callerAddr = caller;
-    const data = await main(vm, 'ERC20__MAIN', inputStack, initialMemory, calldata, callvalue, callerAddr);
-    if (logGas) { console.log(`Gas used by approve(...): ${data.gas}`); }
-}
-
-async function transferFrom(caller, owner, recipient, amount) {
-    const calldata = [{ index: 0, value: 0x23b872dd, len: 4 },
-        { index: 4, value: owner, len: 32 },
-        { index: 36, value: recipient, len: 32 },
-        { index: 68, value: amount, len: 32 }];
-    const initialMemory = []; const inputStack = []; const
-        callvalue = 0;
-    const callerAddr = caller;
-    const data = await main(vm, 'ERC20__MAIN', inputStack, initialMemory, calldata, callvalue, callerAddr);
-    if (logGas) { console.log(`Gas used by transferFrom(...): ${data.gas}`); }
-}
-
 module.exports = {
-    init, getTotalSupply, getBalanceOf, transfer, mint, approve, getAllowance, transferFrom,
+    init, getTotalSupply, getBalanceOf, mint,
 };

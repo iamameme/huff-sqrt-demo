@@ -1,3 +1,11 @@
+## Lazy Sqrt Demo
+
+- Go to erc20_interface.js and modify the number passed to the total_supply function to test the sqrt function.
+- Ignore the rest
+- Just run npm run exampletest and see that sqrt(400) is indeed 20
+
+
+## Here's all the other readme stuff made by, according to the git history, some bozo named dillion 
 ## **Huff**: a programming language for the Ethereum Virtual Machine
 
 <p align="center"><img src="https://i.imgur.com/SVRjUhU.png" width="640px"/></p>
